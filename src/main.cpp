@@ -3,22 +3,14 @@
 #include <GLFW/glfw3.h>
 
 #include "renderer.h"
-
-float vertices[] = {
-    0.0f, 0.0f, 0.0f,
-    1.0f, 0.0f, 0.0f,
-    0.0f, 1.0f, 0.0f,
-    1.0f, 0.0f, 0.0f,
-    0.0f, 1.0f, 0.0f,
-    1.0f, 1.0f, 0.0f    
-};
-
+#include "world.h"
 
 int main()
 {
-    renderer scene(800, 600);
-    scene.render();
+    World world = World();
+
+    renderer scene(world, 800, 600);
+    scene.render(world);
 
     return 0;
 }
-

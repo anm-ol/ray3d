@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.23)
 
 project(ray3d LANGUAGES C CXX)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -31,6 +32,10 @@ target_sources(ray3d
     PRIVATE
         src/main.cpp
         src/renderer.cpp
+        src/world.cpp
+        src/entity.cpp
+        src/camera.cpp
+        src/ray.cpp
         third_party/glad/src/glad.c
 
 )
@@ -50,4 +55,12 @@ target_link_libraries(ray3d
 target_compile_options(ray3d PRIVATE
     $<$<CXX_COMPILER_ID:MSVC>:/W4>
     $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra>
+)
+
+target_compile_options(ray3d PRIVATE
+    $<$<AND:$<CONFIG:Debug>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:-g -O0 -fsanitize=address -fno-omit-frame-pointer>
+)
+
+target_link_options(ray3d PRIVATE
+    $<$<AND:$<CONFIG:Debug>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:-fsanitize=address>
 )
