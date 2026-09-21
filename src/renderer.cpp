@@ -48,8 +48,6 @@ void renderer::init_window()
         {
             vh = height; vw = height/image_ar;
         }
-        std::cout << "vw: " << vw << ", vh: " << vh << std::endl;
-        std::cout << "start x: " << (width - vw)/2 << std::endl;
 
         glViewport((width - vw) / 2, (height - vh) / 2, vw, vh);
     };

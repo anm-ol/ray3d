@@ -6,7 +6,7 @@
 #define PI 3.14159
 Camera::Camera(float f, float ar, float vfov, int image_height) : focal_length(f), aspect_ratio(ar), vfov(vfov), image_height(image_height)
 {
-    position = glm::vec3(0, 0, -1);
+    position = glm::vec3(0, 0, -2);
     focal_center = position + glm::vec3(0, 0, focal_length);
     vfov = vfov*PI/180; // degree to radian
     viewport_height = 2 * glm::tan(vfov/2) * focal_length; //applying vertical FOV
