@@ -8,6 +8,8 @@ class Camera
 public:
     float vfov, focal_length, aspect_ratio, viewport_width, viewport_height;
     float pixelWidth, pixelHeight;
+
+    glm::vec3 pixelX, pixelY;
     int image_height, image_width;
 
 

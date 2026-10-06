@@ -20,7 +20,7 @@ public:
     World(); // default world
     glm::vec3 trace(ray& r, int max_bounces);
     bool ray_hit(ray& r, hitInfo& hit, uint32_t& entityID);
-    void sampleRays();
+    void sampleRays(bool accumulate);
 
 };
 

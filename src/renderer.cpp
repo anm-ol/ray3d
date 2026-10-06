@@ -48,7 +48,8 @@ void renderer::init_window()
         {
             vh = height; vw = height/image_ar;
         }
-
+        std::cout << "fb " << width << "x" << height
+          << " vp " << vw << "x" << vh << "\n";
         glViewport((width - vw) / 2, (height - vh) / 2, vw, vh);
     };
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);  
@@ -83,22 +84,47 @@ void renderer::updateFrame(std::vector<glm::vec4>& pixels)
 void renderer::render(World& world)
 {
     setupFrame();
-
+    bool accumulate = true;
     // render loop
     while(!glfwWindowShouldClose(window))
     {   
-        world.sampleRays();
-        updateFrame(world.pixels);
+        auto t0 = std::chrono::high_resolution_clock::now();
+        world.sampleRays(accumulate);
 
-        processInput();
+        updateFrame(world.pixels);
+        auto t1 = std::chrono::high_resolution_clock::now();
+        std::cout << std::chrono::duration<float,std::milli>(t1-t0).count() << " ms\n";
+
+        auto camPos = world.cam.position;
+        processInput(world);
+        accumulate = camPos == world.cam.position;
+        
         glfwSwapBuffers(window);
         glfwPollEvents();    
     }
     
     glfwTerminate();
 }
-void renderer::processInput()
-{
+void renderer::processInput(World& world)
+{   
+    auto cameraPos = world.cam.position;
+    const float cameraSpeed = 0.2f; // adjust accordingly
+    auto cameraFront = glm::vec3(0, 0, 1);
+    auto cameraUp = glm::vec3(0, 1, 0);
+
     if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
+
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        world.cam.set_pos(cameraPos + cameraSpeed * cameraFront);
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        world.cam.set_pos(cameraPos - cameraSpeed * cameraFront);
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        world.cam.set_pos(cameraPos - glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed);
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        world.cam.set_pos(cameraPos + glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed);
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+        world.cam.set_pos(cameraPos + cameraSpeed * cameraUp);
+    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+        world.cam.set_pos(cameraPos - cameraSpeed * cameraUp);
 }

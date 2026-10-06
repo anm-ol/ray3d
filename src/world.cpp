@@ -11,7 +11,7 @@ World::World()
     float ar = 9/16.0f;
     float f = 1.0f;
     cam = Camera(f, ar, 80, 512);
-    envLight = glm::vec3(0.53, 0.81, 0.92)/2.0f; // sky background
+    envLight = glm::vec3(0.53, 0.81, 0.92)/10.0f; // sky background
     // envLight = glm::vec3(0);
 
     Material mat;
@@ -94,12 +94,13 @@ vec3 World::trace(ray& r, int max_bounces)
 }
 
 using namespace std;
-void World::sampleRays()
+void World::sampleRays(bool accumulate)
 {      
+
     sampleCount++;
 
     int num_samples = 1;
-    int max_bounces = 10;
+    int max_bounces = 5;
     for(int heightIndex=0; heightIndex<cam.image_height; heightIndex++)
     {
         for(int widthIndex=0; widthIndex<cam.image_width; widthIndex++)
@@ -111,9 +112,18 @@ void World::sampleRays()
                 pixelColor += vec4(trace(r, max_bounces), 1.0);
             pixelColor.w = 1.0;
 
-            std::cout << sampleCount << std::endl;
-            accumPixels[i] += pixelColor; 
-            pixels[i] = accumPixels[i]/(float)sampleCount;
+            if (accumulate)
+            {
+                accumPixels[i] += pixelColor; 
+                pixels[i] = accumPixels[i]/(float)sampleCount;
+            }
+            else
+            {
+                accumPixels[i] = vec4(0, 0, 0, 0);
+                pixels[i] = pixelColor;
+            }
         }
     }
+    if (!accumulate)
+        sampleCount = 0;
 } 
