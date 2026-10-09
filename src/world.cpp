@@ -4,6 +4,8 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/string_cast.hpp>
 
+using namespace std;
+
 World::World()
 {
 // default world setup, should probably add stuff later to 

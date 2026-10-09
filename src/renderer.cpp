@@ -2,7 +2,7 @@
 #include <iostream>
 // #include <vector>
 
-renderer::renderer(World& world, int width, int height): width(width), height(height)
+renderer::renderer(World& world, int width, int height): world(world), width(width), height(height)
 {
     init_window();
     std::string shaderPath = std::filesystem::current_path().string() + "/shaders/";
@@ -36,6 +36,7 @@ void renderer::init_window()
 
     glViewport(0, 0, width, height);
     glfwSetWindowUserPointer(window, this);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); 
 
     auto framebuffer_size_callback = [](GLFWwindow* window, int width, int height)
     {
@@ -52,7 +53,9 @@ void renderer::init_window()
           << " vp " << vw << "x" << vh << "\n";
         glViewport((width - vw) / 2, (height - vh) / 2, vw, vh);
     };
+
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);  
+    glfwSetCursorPosCallback(window, mouseCallback);
 }
 
 // Change from reinhard tonemap to something else
@@ -84,7 +87,6 @@ void renderer::updateFrame(std::vector<glm::vec4>& pixels)
 void renderer::render(World& world)
 {
     setupFrame();
-    bool accumulate = true;
     // render loop
     while(!glfwWindowShouldClose(window))
     {   
@@ -97,7 +99,7 @@ void renderer::render(World& world)
 
         auto camPos = world.cam.position;
         processInput(world);
-        accumulate = camPos == world.cam.position;
+        accumulate = (camPos == world.cam.position);
         
         glfwSwapBuffers(window);
         glfwPollEvents();    
@@ -109,22 +111,45 @@ void renderer::processInput(World& world)
 {   
     auto cameraPos = world.cam.position;
     const float cameraSpeed = 0.2f; // adjust accordingly
-    auto cameraFront = glm::vec3(0, 0, 1);
-    auto cameraUp = glm::vec3(0, 1, 0);
+    auto cameraFront = world.cam.frontDir;
+    auto cameraUp = world.cam.upDir;
+    auto worldUp = glm::vec3(0, 1, 0);
 
     if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        world.cam.set_pos(cameraPos + cameraSpeed * cameraFront);
+        world.cam.setPosition(cameraPos + cameraSpeed * cameraFront);
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        world.cam.set_pos(cameraPos - cameraSpeed * cameraFront);
+        world.cam.setPosition(cameraPos - cameraSpeed * cameraFront);
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        world.cam.set_pos(cameraPos - glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed);
+        world.cam.setPosition(cameraPos - glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        world.cam.set_pos(cameraPos + glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed);
+        world.cam.setPosition(cameraPos + glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed);
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-        world.cam.set_pos(cameraPos + cameraSpeed * cameraUp);
+        world.cam.setPosition(cameraPos + cameraSpeed * worldUp);
     if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-        world.cam.set_pos(cameraPos - cameraSpeed * cameraUp);
+        world.cam.setPosition(cameraPos - cameraSpeed * worldUp);
+}
+
+void mouseCallback(GLFWwindow* window, double xpos, double ypos)
+{
+    static bool firstMouse = true;
+    renderer* windowUser = static_cast<renderer*>(glfwGetWindowUserPointer(window));
+    windowUser->accumulate = false;
+
+    if (firstMouse)
+    {
+        windowUser->lastX = xpos;
+        windowUser->lastY = ypos;
+        firstMouse = false;
+    }
+  
+    float xoffset = xpos - windowUser->lastX;
+    float yoffset = windowUser->lastY - ypos; 
+    windowUser->lastX = xpos;
+    windowUser->lastY = ypos;
+
+    auto& camera = windowUser->world.cam;
+    camera.processCameraMovement(xoffset, yoffset);
 }

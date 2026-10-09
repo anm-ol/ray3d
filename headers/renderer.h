@@ -12,6 +12,9 @@ public:
     int width, height;
     float aspect_ratio;
 
+    float lastX, lastY;
+    bool accumulate = true;
+
     float vertices[18] = {
     -1.0f, -1.0f, 0.0f,
     1.0f, -1.0f, 0.0f,
@@ -25,6 +28,8 @@ public:
     GLFWwindow* window;
     Shader shader;
 
+    World& world;
+
     renderer(World& world, int width, int height);
     void init_window();
     void render(World& world);
@@ -34,3 +39,5 @@ public:
     void processInput(World& world);
     // static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 };
+
+void mouseCallback(GLFWwindow* window, double xpos, double ypos);

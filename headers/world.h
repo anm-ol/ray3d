@@ -9,8 +9,8 @@ class World
 public:
     std::vector<std::shared_ptr<Entity>> entities;
     std::vector<Material> materials;
-    vector<glm::vec4> pixels;
-    vector<glm::vec4> accumPixels;
+    std::vector<glm::vec4> pixels;
+    std::vector<glm::vec4> accumPixels;
     int sampleCount;
 
     Camera cam;
