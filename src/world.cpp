@@ -42,6 +42,10 @@ World::World()
     s3->materialID = 3;
     entities.push_back(s3);
 
+    std::shared_ptr<Mesh> mesh1 = std::make_shared<Mesh>("Torus.obj");
+    mesh1->materialID = 0;
+    entities.push_back(mesh1);
+
     pixels = vector<glm::vec4>(cam.image_height*cam.image_width, glm::vec4(0.0,0,0,1));
     accumPixels = vector<glm::vec4>(cam.image_height*cam.image_width, glm::vec4(0.0,0,0,1));
     sampleCount = 0;
@@ -101,7 +105,7 @@ void World::sampleRays(bool accumulate)
     sampleCount++;
 
     int num_samples = 1;
-    int max_bounces = 5;
+    int max_bounces = 2;
     for(int heightIndex=0; heightIndex<cam.image_height; heightIndex++)
     {
         for(int widthIndex=0; widthIndex<cam.image_width; widthIndex++)

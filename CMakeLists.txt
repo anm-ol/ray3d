@@ -43,6 +43,7 @@ target_sources(ray3d
 target_include_directories(ray3d
     PRIVATE
         third_party/glad/include
+        third_party/tinyobjloader
         headers
 )
 

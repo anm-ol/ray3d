@@ -23,6 +23,7 @@ struct hitInfo{
     glm::vec3 rayColor;
 
     float closest_t;
+    int hitTriangleIdx = -1;
 
     hitInfo(ray r_in): r_in(r_in), closest_t(INFINITY), rayColor(glm::vec3(1.0f))
     {}
