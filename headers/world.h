@@ -3,6 +3,7 @@
 #include <memory>
 #include "entity.h"
 #include "camera.h"
+#include "texture.h"
 
 class World
 {
@@ -14,6 +15,7 @@ public:
     int sampleCount;
 
     Camera cam;
+    Texture  skybox{"assets/noirlab2430b.hdr"};
 
     glm::vec3 envLight;
     

@@ -36,13 +36,14 @@ target_sources(ray3d
         src/entity.cpp
         src/camera.cpp
         src/ray.cpp
+        src/texture.cpp
         third_party/glad/src/glad.c
-
 )
 
 target_include_directories(ray3d
     PRIVATE
         third_party/glad/include
+        third_party/stb
         headers
 )
 

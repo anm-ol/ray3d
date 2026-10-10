@@ -17,11 +17,11 @@ World::World()
     // envLight = glm::vec3(0);
 
     Material mat;
-    mat = Material(glm::vec3(0.6, 0, 0), 0, 0.5f);
+    mat = Material(glm::vec3(0.6, 0, 0), 0, 0.0f);//0.5f
+    materials.push_back(mat); // creates a copy of mat and stores it at the end of the maaterials array
+    mat = Material(glm::vec3(1.0f), 1, 0.0f);//0.2f);  //glm::vec3(0.2, 0.8, 0), 1, 0.0f);//0.2f);
     materials.push_back(mat);
-    mat = Material(glm::vec3(0.2, 0.8, 0), 1, 0.2f);
-    materials.push_back(mat);
-    mat = Material(glm::vec3(0.2, 0.2, 0.7), 1, 0.5f);
+    mat = Material(glm::vec3(0.2, 0.2, 0.7), 1, 0.0f);//0.5f);
     materials.push_back(mat);
     mat = Material(glm::vec3(0, 0, 1), 1.0f); // emissive material
     materials.push_back(mat);
@@ -81,8 +81,15 @@ vec3 World::trace(ray& r, int max_bounces)
         uint32_t closestEntity; 
         if(!ray_hit(hit.r_in, hit, closestEntity))
         {
-            inLight += envLight * hit.rayColor;
+
+           //spherical projection:we take a direction in 3D space and find the matching location on a flat, 360° panoramic image.
+            vec3 d = glm::normalize(hit.r_in.dir);
+            float u = 0.5f + std::atan2(d.z, d.x) / (2.0f * 3.14159265f); //horizontal position in the sky image //we find the angle between x nad z and (atan2 gives angles bet -pie and pie )so we / 2pie and add +0.5
+            float v = 0.5f - std::asin(d.y) / 3.14159265f; //rays elevation from xz plane  //asin finds angle between -pie/2 to pie/2
+
+            inLight += skybox.sample(u, v) * hit.rayColor;;
             return inLight;
+
         }  
         auto materialID = entities[closestEntity]->materialID;
         auto material = materials[materialID];
@@ -113,6 +120,7 @@ void World::sampleRays(bool accumulate)
                 pixelColor += vec4(trace(r, max_bounces), 1.0);
             pixelColor.w = 1.0;
 
+            //std::cout << sampleCount << std::endl;
             if (accumulate)
             {
                 accumPixels[i] += pixelColor; 
@@ -127,4 +135,4 @@ void World::sampleRays(bool accumulate)
     }
     if (!accumulate)
         sampleCount = 0;
-} 
+}

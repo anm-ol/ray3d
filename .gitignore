@@ -1,3 +1,23 @@
 build/
 build-release/
 .vscode
+
+# Local image assets.
+/assets/beach-surrounded-by-rocks-sea-cloudy-sky-beautiful-pink-sunset.jpg
+/assets/beautiful-mountains-landscape.jpg
+/assets/brown-dock-body-water-sunrise.jpg
+/assets/cloud_layers_1k.hdr
+/assets/cloud_layers_preview.png
+/assets/kloofendal_48d_partly_cloudy_4k.exr
+/assets/kloofendal_48d_partly_cloudy_puresky_4k.exr
+/assets/kloofendal_48d_partly_cloudy_puresky_4k.hdr
+/assets/noirlab2430b.hdr
+/assets/noirlab2430b.tif
+/assets/pexels-markusspiske-141783.jpg
+/assets/pexels-samuel-walker-15032-70589.jpg
+/assets/rosendal_park_sunset_puresky_1k.hdr
+/assets/ryan-hutton-Jztmx9yqjBw-unsplash (1).jpg
+/assets/skybox_preview.png
+
+# Local experiments.
+/test/
