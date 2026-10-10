@@ -115,26 +115,49 @@ void renderer::processInput(World& world)
     auto cameraUp = world.cam.upDir;
     auto worldUp = glm::vec3(0, 1, 0);
 
+    static bool tabLastFrame = false;
+
     if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
+    if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS)
+    {   
+        if (!tabLastFrame)
+        {
+            int mode = glfwGetInputMode(window, GLFW_CURSOR);
+            if (mode == GLFW_CURSOR_DISABLED)
+                glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+            else
+                glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        }
+        tabLastFrame = true;
+    }
+    else tabLastFrame = false;
 
+    glm::vec3 newCamPosition = world.cam.position;
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        world.cam.setPosition(cameraPos + cameraSpeed * cameraFront);
+        newCamPosition = cameraPos + cameraSpeed * cameraFront;
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        world.cam.setPosition(cameraPos - cameraSpeed * cameraFront);
+        newCamPosition = cameraPos - cameraSpeed * cameraFront;
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        world.cam.setPosition(cameraPos - glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed);
+        newCamPosition = cameraPos - glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        world.cam.setPosition(cameraPos + glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed);
+        newCamPosition = cameraPos + glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-        world.cam.setPosition(cameraPos + cameraSpeed * worldUp);
+        newCamPosition = cameraPos + cameraSpeed * worldUp;
     if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-        world.cam.setPosition(cameraPos - cameraSpeed * worldUp);
+        newCamPosition = cameraPos - cameraSpeed * worldUp;
+    world.cam.setPosition(newCamPosition);
 }
 
 void mouseCallback(GLFWwindow* window, double xpos, double ypos)
-{
+{   
     static bool firstMouse = true;
+    if (glfwGetInputMode(window, GLFW_CURSOR) == GLFW_CURSOR_NORMAL)
+    {
+        firstMouse = true;
+        return;
+    }
+
     renderer* windowUser = static_cast<renderer*>(glfwGetWindowUserPointer(window));
     windowUser->accumulate = false;
 

@@ -26,8 +26,6 @@ Camera::Camera(float f, float ar, float vfov, int image_height) : focal_length(f
     
     setOrientation();
 
-    // focal_center = position + glm::vec3(0, 0, focal_length);
-    auto up = glm::vec3(0, 1, 0);
     vfov = vfov*PI/180; // degree to radian
     viewport_height = 2 * glm::tan(vfov/2) * focal_length; //applying vertical FOV
     viewport_width = viewport_height / aspect_ratio; // applying aspect ratio
@@ -36,7 +34,7 @@ Camera::Camera(float f, float ar, float vfov, int image_height) : focal_length(f
     pixelWidth = viewport_width / image_width;
     pixelHeight = pixelWidth;
 
-    pixelX = glm::normalize(glm::cross(focal_center - position, up)) * pixelWidth;
+    pixelX = glm::normalize(glm::cross(focal_center - position, upDir)) * pixelWidth;
     pixelY = glm::normalize(glm::cross(pixelX, focal_center - position)) * pixelHeight;
     // std::cout << "img " << image_width << "x" << image_height << "\n";
     // std::cout << "vp  " << viewport_width << "x" << viewport_height << "\n";

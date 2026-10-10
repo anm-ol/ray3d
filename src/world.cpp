@@ -23,7 +23,7 @@ World::World()
     materials.push_back(mat);
     mat = Material(glm::vec3(0.2, 0.2, 0.7), 1, 0.5f);
     materials.push_back(mat);
-    mat = Material(glm::vec3(1), 1.0f); // emissive material
+    mat = Material(glm::vec3(0, 0, 1), 1.0f); // emissive material
     materials.push_back(mat);
 
     std::shared_ptr<Sphere> s0 = std::make_shared<Sphere>(glm::vec3(2, 42, 2), 40.0f);
@@ -53,7 +53,7 @@ bool World::ray_hit(ray& r, hitInfo& hit, uint32_t& entityID)
 {
     float last_t;
     vec3 albedo(1);
-    for(int i=0; i<entities.size(); i++)
+    for(size_t i=0; i<entities.size(); i++)
     {   
         last_t = hit.closest_t;
         auto e = entities[i];
@@ -95,7 +95,6 @@ vec3 World::trace(ray& r, int max_bounces)
     return inLight;
 }
 
-using namespace std;
 void World::sampleRays(bool accumulate)
 {      
 
