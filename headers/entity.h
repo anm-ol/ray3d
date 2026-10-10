@@ -35,8 +35,16 @@ public:
 class Mesh : public Entity {
 public:
     std::vector<Triangle> triangles;
-    Mesh(const std::string& mesh_file);
+    glm::vec3 scale {1.0f};
+    Mesh(const std::string& mesh_file, glm::vec3 c = glm::vec3{1.0f}, glm::vec3 scale = glm::vec3{1.0f});
     Mesh(std::vector<Triangle> triangles): triangles(std::move(triangles)) {}
     bool ray_hit(ray& r, hitInfo& hit) override;
     void scatter(hitInfo& hit, Material& mat) override;
+
+    void setCenter(const glm::vec3& c);
+    void setScale(const glm::vec3& s);
+private:
+    void updateTransform();
+    glm::mat4 model;
+    glm::mat4 invModel;
 };

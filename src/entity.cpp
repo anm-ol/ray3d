@@ -1,6 +1,7 @@
 #include "entity.h"
 #include <iostream>
 #include <glm/gtc/random.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "tiny_obj_loader.h"
 
@@ -18,7 +19,6 @@ bool Sphere::ray_hit(ray& r, hitInfo& hit)
     float a = glm::dot(r.dir, r.dir);
     float b = -glm::dot(r.orig - center, r.dir);
     float c = glm::dot(r.orig - center, r.orig - center) - radius*radius;
-    
 
     float d = (b*b - a*c);
     if(d<0)
@@ -109,8 +109,11 @@ void Triangle::scatter(hitInfo& hit, Material& mat)
     hit.r_out = ray(orig, outDir);
 }
 
-Mesh::Mesh(const std::string& mesh_file)
+Mesh::Mesh(const std::string& mesh_file, 
+    glm::vec3 c, glm::vec3 scale) : scale(scale)
 {
+    center = c;
+
     tinyobj::ObjReader reader;
     tinyobj::ObjReaderConfig config;
     config.triangulate = true;
@@ -145,27 +148,62 @@ Mesh::Mesh(const std::string& mesh_file)
             );
         }
     }
+
+    updateTransform();
 }
 
-bool Mesh::ray_hit(ray& r, hitInfo& hit)
+void Mesh::updateTransform() 
+{
+    model = glm::translate(glm::mat4(1.0f), center) * 
+            glm::scale(glm::mat4(1.0f), scale);
+    invModel = glm::inverse(model);
+}
+
+void Mesh::setCenter(const glm::vec3& c) {
+    center = c;
+    updateTransform();
+}
+
+void Mesh::setScale(const glm::vec3& s) {
+    scale = s;
+    updateTransform();
+}
+
+bool Mesh::ray_hit(ray &r, hitInfo &hit)
 {  
+    // world space -> mesh space
+    ray localRay;
+    localRay.orig = glm::vec3(
+        invModel * glm::vec4(r.orig, 1.0f)
+    );
+    localRay.dir = glm::vec3(
+        invModel * glm::vec4(r.dir, 0.0f)
+    );
+
     bool hitAnything = false;
 
     for (size_t i = 0; i < triangles.size(); i++) 
     {
-        if (triangles[i].ray_hit(r, hit)) 
+        if (triangles[i].ray_hit(localRay, hit)) 
         {
             hitAnything = true;
             hit.hitTriangleIdx = i;
         }
     }
-    std::cout << hit.hitTriangleIdx << "hit" << endl;
+
+    if (hitAnything)
+    {
+        // convert mesh space -> world space
+        hit.hitPoint = glm::vec3(model * glm::vec4(hit.hitPoint, 1.0f));
+        hit.hitNormal = glm::normalize(glm::transpose(glm::mat3(invModel)) * hit.hitNormal);
+    }
+
     return hitAnything;
 }
 
 void Mesh::scatter(hitInfo& hit, Material& mat)
 {
-    if (hit.hitTriangleIdx < 0 || hit.hitTriangleIdx >= (int)triangles.size()) return;
+    if (hit.hitTriangleIdx < 0 || hit.hitTriangleIdx >= triangles.size()) return;
 
     triangles[hit.hitTriangleIdx].scatter(hit, mat);    
 }
