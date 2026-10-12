@@ -1,9 +1,10 @@
 #pragma once
 #include <vector>
 #include <memory>
+#include <string>
 #include "entity.h"
 #include "camera.h"
-#include "texture.h"
+#include "skybox.h"
 
 class World
 {
@@ -15,11 +16,11 @@ public:
     int sampleCount;
 
     Camera cam;
-    Texture  skybox{"assets/noirlab2430b.hdr"};
+    std::unique_ptr<Skybox> skybox;
 
     glm::vec3 envLight;
     
-    World(); // default world
+    World(const std::string& skyboxPath = "");
     glm::vec3 trace(ray& r, int max_bounces);
     bool ray_hit(ray& r, hitInfo& hit, uint32_t& entityID);
     void sampleRays(bool accumulate);

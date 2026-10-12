@@ -36,6 +36,7 @@ target_sources(ray3d
         src/entity.cpp
         src/camera.cpp
         src/ray.cpp
+        src/skybox.cpp
         src/texture.cpp
         third_party/glad/src/glad.c
 )

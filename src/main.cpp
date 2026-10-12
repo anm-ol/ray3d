@@ -7,7 +7,7 @@
 
 int main()
 {
-    World world = World();
+    World world("");
 
     renderer scene(world, 800, 600);
     scene.render(world);
