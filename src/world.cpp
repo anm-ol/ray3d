@@ -6,15 +6,18 @@
 
 using namespace std;
 
-World::World()
+World::World(const std::string& skyboxPath)
 {
 // default world setup, should probably add stuff later to 
 // actually init attributes of the world
+
+    envLight = glm::vec3(0.53f, 0.81f, 0.92f) / 10.0f;
+    if (!skyboxPath.empty())
+        skybox = std::make_unique<Skybox>(skyboxPath.c_str());
+
     float ar = 9/16.0f;
     float f = 1.0f;
     cam = Camera(f, ar, 80, 512);
-    envLight = glm::vec3(0.53, 0.81, 0.92)/10.0f; // sky background
-    // envLight = glm::vec3(0);
 
     Material mat;
     mat = Material(glm::vec3(0.6, 0, 0), 0, 0.0f);//0.5f
@@ -81,13 +84,7 @@ vec3 World::trace(ray& r, int max_bounces)
         uint32_t closestEntity; 
         if(!ray_hit(hit.r_in, hit, closestEntity))
         {
-
-           //spherical projection:we take a direction in 3D space and find the matching location on a flat, 360° panoramic image.
-            vec3 d = glm::normalize(hit.r_in.dir);
-            float u = 0.5f + std::atan2(d.z, d.x) / (2.0f * 3.14159265f); //horizontal position in the sky image //we find the angle between x nad z and (atan2 gives angles bet -pie and pie )so we / 2pie and add +0.5
-            float v = 0.5f - std::asin(d.y) / 3.14159265f; //rays elevation from xz plane  //asin finds angle between -pie/2 to pie/2
-
-            inLight += skybox.sample(u, v) * hit.rayColor;;
+            inLight += (skybox ? skybox->sampleColor(hit.r_in.dir) : envLight) * hit.rayColor;
             return inLight;
 
         }  
@@ -120,7 +117,6 @@ void World::sampleRays(bool accumulate)
                 pixelColor += vec4(trace(r, max_bounces), 1.0);
             pixelColor.w = 1.0;
 
-            //std::cout << sampleCount << std::endl;
             if (accumulate)
             {
                 accumPixels[i] += pixelColor; 

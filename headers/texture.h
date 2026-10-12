@@ -3,7 +3,7 @@
  
 
 struct Texture {
-    int w =0 , h =0 , c = 0;
+    int w =0 , h =0 , c = 0;  
     float* data = nullptr; 
 
     Texture() = default;
@@ -12,7 +12,7 @@ struct Texture {
     Texture& operator=(const Texture&) = delete;
     ~Texture();
 
-    glm::vec3 sample(float u , float v) const ;
+    glm::vec3 sample(float u , float v, bool repeatU =false ) const ;
 
 private:
     glm::vec3 pixel(int column, int row) const;
