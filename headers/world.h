@@ -1,7 +1,6 @@
 #pragma once
 #include <vector>
 #include <memory>
-#include <string>
 #include "entity.h"
 #include "camera.h"
 #include "skybox.h"
@@ -20,7 +19,7 @@ public:
 
     glm::vec3 envLight;
     
-    World(const std::string& skyboxPath = "");
+    World();
     glm::vec3 trace(ray& r, int max_bounces);
     bool ray_hit(ray& r, hitInfo& hit, uint32_t& entityID);
     void sampleRays(bool accumulate);

@@ -1,20 +1,23 @@
 #include "world.h"
 #include <random>
 #include <iostream>
+#include <string>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/string_cast.hpp>
 
 using namespace std;
 
-World::World(const std::string& skyboxPath)
+World::World()
 {
 // default world setup, should probably add stuff later to 
 // actually init attributes of the world
 
     envLight = glm::vec3(0.53f, 0.81f, 0.92f) / 10.0f;
+    const std::string skyboxPath = "";
+
     if (!skyboxPath.empty())
         skybox = std::make_unique<Skybox>(skyboxPath.c_str());
-
+        
     float ar = 9/16.0f;
     float f = 1.0f;
     cam = Camera(f, ar, 80, 512);
