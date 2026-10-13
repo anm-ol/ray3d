@@ -1,6 +1,7 @@
 #include "world.h"
 #include <random>
 #include <iostream>
+#include <string>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/string_cast.hpp>
 
@@ -10,18 +11,23 @@ World::World()
 {
 // default world setup, should probably add stuff later to 
 // actually init attributes of the world
+
+    envLight = glm::vec3(0.53f, 0.81f, 0.92f) / 10.0f;
+    const std::string skyboxPath = "";
+
+    if (!skyboxPath.empty())
+        skybox = std::make_unique<Skybox>(skyboxPath.c_str());
+        
     float ar = 9/16.0f;
     float f = 1.0f;
     cam = Camera(f, ar, 80, 512);
-    envLight = glm::vec3(0.53, 0.81, 0.92)/10.0f; // sky background
-    // envLight = glm::vec3(0);
 
     Material mat;
-    mat = Material(glm::vec3(0.6, 0, 0), 0, 0.5f);
+    mat = Material(glm::vec3(0.6, 0, 0), 0, 0.0f);//0.5f
+    materials.push_back(mat); // creates a copy of mat and stores it at the end of the maaterials array
+    mat = Material(glm::vec3(1.0f), 1, 0.0f);//0.2f);  //glm::vec3(0.2, 0.8, 0), 1, 0.0f);//0.2f);
     materials.push_back(mat);
-    mat = Material(glm::vec3(0.2, 0.8, 0), 1, 0.2f);
-    materials.push_back(mat);
-    mat = Material(glm::vec3(0.2, 0.2, 0.7), 1, 0.5f);
+    mat = Material(glm::vec3(0.2, 0.2, 0.7), 1, 0.0f);//0.5f);
     materials.push_back(mat);
     mat = Material(glm::vec3(0, 0, 1), 1.0f); // emissive material
     materials.push_back(mat);
@@ -81,8 +87,9 @@ vec3 World::trace(ray& r, int max_bounces)
         uint32_t closestEntity; 
         if(!ray_hit(hit.r_in, hit, closestEntity))
         {
-            inLight += envLight * hit.rayColor;
+            inLight += (skybox ? skybox->sampleColor(hit.r_in.dir) : envLight) * hit.rayColor;
             return inLight;
+
         }  
         auto materialID = entities[closestEntity]->materialID;
         auto material = materials[materialID];
@@ -127,4 +134,4 @@ void World::sampleRays(bool accumulate)
     }
     if (!accumulate)
         sampleCount = 0;
-} 
+}

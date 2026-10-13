@@ -1,3 +1,9 @@
 build/
 build-release/
 .vscode
+
+# Local image assets.
+/assets/
+
+# Local experiments.
+/test/
