@@ -13,7 +13,6 @@ public:
     
     virtual ~Entity() = default;
     virtual bool ray_hit(ray& r, hitInfo& hit) = 0;
-    virtual void scatter(hitInfo& hit, Material& mat) = 0;
 };
 
 class Sphere : public Entity {
@@ -21,7 +20,6 @@ public:
     float radius{1.0f};
     Sphere(glm::vec3 c, float r);
     bool ray_hit(ray& r, hitInfo& hit) override;
-    void scatter(hitInfo& hit, Material& mat) override;
 };
 
 class Triangle : public Entity {
@@ -29,7 +27,6 @@ public:
     glm::vec3 v0, v1, v2;
     Triangle(glm::vec3 v0, glm::vec3 v1, glm::vec3 v2);
     bool ray_hit(ray& ray, hitInfo& hit) override;
-    void scatter(hitInfo& hit, Material& mat) override;
 };
 
 class Mesh : public Entity {
@@ -39,7 +36,6 @@ public:
     Mesh(const std::string& mesh_file, glm::vec3 c = glm::vec3{1.0f}, glm::vec3 scale = glm::vec3{1.0f});
     Mesh(std::vector<Triangle> triangles): triangles(std::move(triangles)) {}
     bool ray_hit(ray& r, hitInfo& hit) override;
-    void scatter(hitInfo& hit, Material& mat) override;
 
     void setCenter(const glm::vec3& c);
     void setScale(const glm::vec3& s);

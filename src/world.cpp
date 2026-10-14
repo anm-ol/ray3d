@@ -90,7 +90,7 @@ vec3 World::trace(ray& r, int max_bounces)
         }  
         auto materialID = entities[closestEntity]->materialID;
         auto material = materials[materialID];
-        entities[closestEntity]->scatter(hit, material);
+        material.scatter(hit);
 
         inLight += material.emission() * hit.rayColor;
         hit.rayColor *= material.albedo;

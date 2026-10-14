@@ -39,16 +39,6 @@ bool Sphere::ray_hit(ray& r, hitInfo& hit)
 }
 
 using namespace glm;
-void Sphere::scatter(hitInfo& hit, Material& mat)
-{
-    vec3 orig;
-    orig = hit.hitPoint + 0.01f*(hit.hitNormal);
-    auto diffuseDir = glm::sphericalRand(1.0f) + hit.hitNormal;
-    auto specularDir = glm::reflect(hit.r_in.dir, hit.hitNormal);
-
-    auto outDir = glm::mix(specularDir, diffuseDir, mat.roughness); 
-    hit.r_out = ray(orig, outDir);
-}
 
 Triangle::Triangle(glm::vec3 v0, glm::vec3 v1, glm::vec3 v2): v0(v0), v1(v1), v2(v2) {}
 
@@ -98,16 +88,6 @@ bool Triangle::ray_hit(ray& r, hitInfo& hit)
     return true;
 }
 
-void Triangle::scatter(hitInfo& hit, Material& mat)
-{
-    vec3 orig;
-    orig = hit.hitPoint + 0.01f*(hit.hitNormal);
-    auto diffuseDir = glm::sphericalRand(1.0f) + hit.hitNormal;
-    auto specularDir = glm::reflect(hit.r_in.dir, hit.hitNormal);
-
-    auto outDir = glm::mix(specularDir, diffuseDir, mat.roughness); 
-    hit.r_out = ray(orig, outDir);
-}
 
 Mesh::Mesh(const std::string& mesh_file, 
     glm::vec3 c, glm::vec3 scale) : scale(scale)
@@ -187,7 +167,6 @@ bool Mesh::ray_hit(ray &r, hitInfo &hit)
         if (triangles[i].ray_hit(localRay, hit)) 
         {
             hitAnything = true;
-            hit.hitTriangleIdx = i;
         }
     }
 
@@ -199,11 +178,4 @@ bool Mesh::ray_hit(ray &r, hitInfo &hit)
     }
 
     return hitAnything;
-}
-
-void Mesh::scatter(hitInfo& hit, Material& mat)
-{
-    if (hit.hitTriangleIdx < 0 || hit.hitTriangleIdx >= triangles.size()) return;
-
-    triangles[hit.hitTriangleIdx].scatter(hit, mat);    
 }
