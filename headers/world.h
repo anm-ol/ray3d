@@ -15,10 +15,7 @@ public:
     int sampleCount;
 
     Camera cam;
-    Skybox skybox;
-    bool useSkybox = false;
-
-    glm::vec3 envLight;
+    Skybox skybox{glm::vec3(0.53f, 0.81f, 0.92f) / 10.0f};
     
     World();
     glm::vec3 trace(ray& r, int max_bounces);
