@@ -2,6 +2,9 @@
 #include <cmath>
 #define PI 3.14159f
 
+
+Skybox::Skybox() : Skybox("path/to/your/skybox.hdr") {}
+
 Skybox::Skybox(const char* path, float rotation_angle)
     : file_path(path),
       rotation_angle(rotation_angle),

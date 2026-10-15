@@ -5,6 +5,7 @@
 
 class Skybox {
 public:
+    Skybox();
     Skybox(const char* path, float rotation_angle = 0.0f);
     glm::vec3 sampleColor(const glm::vec3& direction) const;
 
