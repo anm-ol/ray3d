@@ -17,9 +17,9 @@ World::World()
     // envLight = glm::vec3(0);
 
     Material mat;
-    mat = Material(glm::vec3(0.6, 0, 0), 0, 0.5f);
+    mat = Material(glm::vec3(0.6, 0, 0), 0, 0.05f);
     materials.push_back(mat);
-    mat = Material(glm::vec3(0.2, 0.8, 0), 1, 0.2f);
+    mat = Material(glm::vec3(0.2, 0.8, 0), 1, 0.05f);
     materials.push_back(mat);
     mat = Material(glm::vec3(0.2, 0.2, 0.7), 1, 0.5f);
     materials.push_back(mat);
@@ -41,6 +41,10 @@ World::World()
     std::shared_ptr<Sphere> s3 = std::make_shared<Sphere>(glm::vec3(1.5, 1, 1.0), 0.5f);
     s3->materialID = 3;
     entities.push_back(s3);
+
+    std::shared_ptr<Mesh> mesh1 = std::make_shared<Mesh>("models/cube.obj", glm::vec3(0.0f, -0.25f, 1.0f), glm::vec3(0.25f, 0.5f, 0.25f));
+    mesh1->materialID = 0;
+    entities.push_back(mesh1);
 
     pixels = vector<glm::vec4>(cam.image_height*cam.image_width, glm::vec4(0.0,0,0,1));
     accumPixels = vector<glm::vec4>(cam.image_height*cam.image_width, glm::vec4(0.0,0,0,1));
@@ -86,7 +90,7 @@ vec3 World::trace(ray& r, int max_bounces)
         }  
         auto materialID = entities[closestEntity]->materialID;
         auto material = materials[materialID];
-        entities[closestEntity]->scatter(hit, material);
+        material.scatter(hit);
 
         inLight += material.emission() * hit.rayColor;
         hit.rayColor *= material.albedo;
@@ -101,7 +105,7 @@ void World::sampleRays(bool accumulate)
     sampleCount++;
 
     int num_samples = 1;
-    int max_bounces = 5;
+    int max_bounces = 20;
     for(int heightIndex=0; heightIndex<cam.image_height; heightIndex++)
     {
         for(int widthIndex=0; widthIndex<cam.image_width; widthIndex++)

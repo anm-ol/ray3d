@@ -1,5 +1,7 @@
 #include "renderer.h"
 #include <iostream>
+#include <filesystem>
+#include <chrono>
 // #include <vector>
 
 renderer::renderer(World& world, int width, int height): world(world), width(width), height(height)
