@@ -15,7 +15,8 @@ public:
     int sampleCount;
 
     Camera cam;
-    std::unique_ptr<Skybox> skybox;
+    Skybox skybox;
+    bool useSkybox = false;
 
     glm::vec3 envLight;
     

@@ -13,11 +13,6 @@ World::World()
 // actually init attributes of the world
 
     envLight = glm::vec3(0.53f, 0.81f, 0.92f) / 10.0f;
-    const std::string skyboxPath = "";
-
-    if (!skyboxPath.empty())
-        skybox = std::make_unique<Skybox>(skyboxPath.c_str());
-        
     float ar = 9/16.0f;
     float f = 1.0f;
     cam = Camera(f, ar, 80, 512);
@@ -87,7 +82,7 @@ vec3 World::trace(ray& r, int max_bounces)
         uint32_t closestEntity; 
         if(!ray_hit(hit.r_in, hit, closestEntity))
         {
-            inLight += (skybox ? skybox->sampleColor(hit.r_in.dir) : envLight) * hit.rayColor;
+            inLight += (useSkybox ? skybox.sampleColor(hit.r_in.dir) : envLight) * hit.rayColor;
             return inLight;
 
         }  
