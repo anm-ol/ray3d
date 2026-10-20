@@ -3,14 +3,14 @@
 #define PI 3.14159f
 
 Skybox::Skybox()
-    : rotation_angle(0.0f),
-      envLight(glm::vec3(0.53f, 0.81f, 0.92f) / 10.0f) {}
+    : envLight(glm::vec3(0.53f, 0.81f, 0.92f) / 10.0f),
+      rotation_angle(0.0f) {}
 
 Skybox::Skybox(const char* path, float rotation_angle)
-    : file_path(path),
+    : envLight(0.0f),
+      file_path(path),
       rotation_angle(rotation_angle),
-      texture(file_path.c_str()),
-      envLight(0.0f) {}
+      texture(file_path.c_str()) {}
 
 glm::vec3 Skybox::sampleColor(const glm::vec3& direction) const {
     if (texture.data == nullptr)

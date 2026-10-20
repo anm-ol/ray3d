@@ -52,7 +52,7 @@ void setCornellBox(World& world)
 {
     world.entities.clear();
     world.materials.clear();
-    world.envLight = glm::vec3(0.0f); // nothing outside the box emits light
+    world.skybox.envLight = glm::vec3(0.0f); // nothing outside the box emits light
 
     // Square image and a narrow FOV so the open front of the room fills the frame.
     world.cam = Camera(1.0f, 1.0f, 40.0f, 512);
