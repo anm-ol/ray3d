@@ -1,5 +1,6 @@
 build/
 build-release/
+assets/
 .vscode
 models/
 

@@ -106,7 +106,7 @@ void World::sampleRays(bool accumulate)
     sampleCount++;
 
     int num_samples = 1;
-    int max_bounces = 20;
+    int max_bounces = 5;
     for(int heightIndex=0; heightIndex<cam.image_height; heightIndex++)
     {
         for(int widthIndex=0; widthIndex<cam.image_width; widthIndex++)
