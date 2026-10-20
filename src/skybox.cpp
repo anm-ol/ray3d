@@ -3,10 +3,8 @@
 #define PI 3.14159f
 
 Skybox::Skybox()
-    : Skybox(glm::vec3(0.53f, 0.81f, 0.92f) / 10.0f) {}
-
-Skybox::Skybox(const glm::vec3& envLight)
-    : rotation_angle(0.0f), envLight(envLight) {}
+    : rotation_angle(0.0f),
+      envLight(glm::vec3(0.53f, 0.81f, 0.92f) / 10.0f) {}
 
 Skybox::Skybox(const char* path, float rotation_angle)
     : file_path(path),
