@@ -2,9 +2,12 @@
 
 #include <vector>
 #include <string>
+#include <memory>
 #include <glm/glm.hpp>
 #include "ray.h"
 #include "material.h"
+
+class BVH;
 
 class Entity {
 public:
@@ -31,16 +34,24 @@ public:
 
 class Mesh : public Entity {
 public:
-    std::vector<Triangle> triangles;
-    glm::vec3 scale {1.0f};
+    ~Mesh() override;
+    Mesh(std::vector<Triangle> triangles);
     Mesh(const std::string& mesh_file, glm::vec3 c = glm::vec3{1.0f}, glm::vec3 scale = glm::vec3{1.0f});
-    Mesh(std::vector<Triangle> triangles): triangles(std::move(triangles)) {}
     bool ray_hit(ray& r, hitInfo& hit) override;
 
     void setCenter(const glm::vec3& c);
     void setScale(const glm::vec3& s);
+
 private:
-    void updateTransform();
+    std::vector<Triangle> triangles;
+    std::unique_ptr<BVH> bvh;
+
+    glm::vec3 scale {1.0f};
+    bool useBVH = true;
+    int bvhDepth = 64;
+
     glm::mat4 model;
     glm::mat4 invModel;
+
+    void updateTransform();
 };

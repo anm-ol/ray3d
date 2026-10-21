@@ -62,11 +62,12 @@ void setCornellBox(World& world)
     world.accumPixels.assign(numPixels, glm::vec4(0, 0, 0, 1));
     world.sampleCount = 0;
 
-    enum : uint32_t { WHITE = 0, RED, GREEN, LIGHT };
+    enum : uint32_t { WHITE = 0, RED, GREEN, LIGHT, SHINY };
     world.materials.push_back(Material(glm::vec3(0.73f), 0.0f, 1.0f));
     world.materials.push_back(Material(glm::vec3(0.65f, 0.05f, 0.05f), 0.0f, 1.0f));
     world.materials.push_back(Material(glm::vec3(0.12f, 0.45f, 0.15f), 0.0f, 1.0f));
     world.materials.push_back(Material(glm::vec3(1.0f, 0.9f, 0.75f), 15.0f));
+    world.materials.push_back(Material(glm::vec3(0.95f), 0.0f, 1.0f)); // polished metal
 
     // Room walls, all facing inward.
     addQuad(world, {-1, -1, 0}, {-1, -1, 2}, { 1, -1, 2}, { 1, -1, 0}, WHITE); // floor,   normal +Y
@@ -80,8 +81,14 @@ void setCornellBox(World& world)
     addQuad(world, {-ls, ly, 1 - ls}, {ls, ly, 1 - ls}, {ls, ly, 1 + ls}, {-ls, ly, 1 + ls}, LIGHT);
 
     // Tall box at the back-left, short box at the front-right.
-    addBox(world, glm::vec3( 0.35f, -0.40f, 1.30f), glm::vec3(0.6f, 1.2f, 0.6f),  18.0f, WHITE);
-    addBox(world, glm::vec3(-0.35f, -0.70f, 0.65f), glm::vec3(0.6f, 0.6f, 0.6f), -15.0f, WHITE);
+    // addBox(world, glm::vec3( 0.35f, -0.40f, 1.30f), glm::vec3(0.6f, 1.2f, 0.6f),  18.0f, WHITE);
+    // addBox(world, glm::vec3(-0.35f, -0.70f, 0.65f), glm::vec3(0.6f, 0.6f, 0.6f), -15.0f, WHITE);'
+
+    glm::vec3 center{0.0f, -0.3f, 1.0f};
+    glm::vec3 scale{0.08f};
+    std::shared_ptr<Mesh> mesh1 = std::make_shared<Mesh>("models/dragon.obj", center, scale);
+    mesh1->materialID = SHINY;
+    world.entities.push_back(mesh1);
 }
 
 int main()

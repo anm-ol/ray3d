@@ -46,7 +46,9 @@ World::World()
     s3->materialID = 3;
     entities.push_back(s3);
 
-    std::shared_ptr<Mesh> mesh1 = std::make_shared<Mesh>("models/cube.obj", glm::vec3(0.0f, -0.25f, 1.0f), glm::vec3(0.25f, 0.5f, 0.25f));
+    glm::vec3 center{0.0f, 0.25f, 1.0f};
+    glm::vec3 scale{0.10f};
+    std::shared_ptr<Mesh> mesh1 = std::make_shared<Mesh>("models/dragon.obj", center, scale);
     mesh1->materialID = 0;
     entities.push_back(mesh1);
 
@@ -108,6 +110,9 @@ void World::sampleRays(bool accumulate)
 {      
 
     sampleCount++;
+
+    int num_samples = 3;
+    int max_bounces = 5;
     for(int heightIndex=0; heightIndex<cam.image_height; heightIndex++)
     {
         for(int widthIndex=0; widthIndex<cam.image_width; widthIndex++)

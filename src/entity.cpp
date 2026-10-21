@@ -1,4 +1,5 @@
 #include "entity.h"
+#include "bvh.h"
 #include <iostream>
 #include <glm/gtc/random.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -88,6 +89,17 @@ bool Triangle::ray_hit(ray& r, hitInfo& hit)
     return true;
 }
 
+Mesh::~Mesh() = default;
+
+Mesh::Mesh(std::vector<Triangle> triangles) : triangles(std::move(triangles))
+{
+    if (useBVH) 
+    {
+        bvh = std::make_unique<BVH>(this->triangles, bvhDepth);
+    }
+
+    updateTransform();
+}
 
 Mesh::Mesh(const std::string& mesh_file, 
     glm::vec3 c, glm::vec3 scale) : scale(scale)
@@ -129,6 +141,11 @@ Mesh::Mesh(const std::string& mesh_file,
         }
     }
 
+    if (useBVH)
+    {
+        bvh = std::make_unique<BVH>(triangles, bvhDepth);
+    }
+
     updateTransform();
 }
 
@@ -153,20 +170,22 @@ bool Mesh::ray_hit(ray &r, hitInfo &hit)
 {  
     // world space -> mesh space
     ray localRay;
-    localRay.orig = glm::vec3(
-        invModel * glm::vec4(r.orig, 1.0f)
-    );
-    localRay.dir = glm::vec3(
-        invModel * glm::vec4(r.dir, 0.0f)
-    );
+    localRay.orig = glm::vec3(invModel * glm::vec4(r.orig, 1.0f));
+    localRay.dir = glm::vec3(invModel * glm::vec4(r.dir, 0.0f));
 
     bool hitAnything = false;
-
-    for (size_t i = 0; i < triangles.size(); i++) 
+    if (useBVH)
     {
-        if (triangles[i].ray_hit(localRay, hit)) 
+        hitAnything = bvh->ray_hit(localRay, hit);
+    }
+    else 
+    {
+        for (auto& triangle : triangles) 
         {
-            hitAnything = true;
+            if (triangle.ray_hit(localRay, hit)) 
+            {
+                hitAnything = true;
+            }
         }
     }
 

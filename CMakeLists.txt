@@ -38,6 +38,7 @@ target_sources(ray3d
         src/ray.cpp
         src/skybox.cpp
         src/texture.cpp
+        src/bvh.cpp
         third_party/glad/src/glad.c
 )
 
