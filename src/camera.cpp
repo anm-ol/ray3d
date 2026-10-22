@@ -66,10 +66,8 @@ void Camera::processCameraMovement(float xoffset, float yoffset)
     xoffset *= sensitivity;
     yoffset *= sensitivity;
 
-    std::cout << xoffset << " :  " << yoffset << std::endl;
     this->yaw   += xoffset;
     this->pitch += yoffset;
-    std::cout << pitch << " :  " << yaw << std::endl;
 
     if(pitch > 89.0f)
         pitch = 89.0f;

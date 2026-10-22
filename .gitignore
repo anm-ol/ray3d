@@ -1,4 +1,5 @@
 build/
+builds/
 build-release/
 assets/
 .vscode
