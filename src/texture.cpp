@@ -6,13 +6,31 @@
 
 
 Texture::Texture(const char* file){
-    data =  stbi_loadf(file , &w , &h ,  &c , 3);
+    load(file);
 }
     Texture::~Texture(){
-        if(data != nullptr){
-            stbi_image_free(data);
-        }
+        clear();
     }
+
+bool Texture::load(const char* file) {
+    int width = 0, height = 0, channels = 0;
+    float* loaded = stbi_loadf(file, &width, &height, &channels, 3);
+    if (loaded == nullptr)
+        return false;
+
+    clear();
+    data = loaded;
+    w = width;
+    h = height;
+    c = channels;
+    return true;
+}
+
+void Texture::clear() {
+    stbi_image_free(data);
+    data = nullptr;
+    w = h = c = 0;
+}
     //sample function
     
     glm::vec3 Texture::sample(float u , float v, bool repeatU) const {

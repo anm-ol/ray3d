@@ -7,10 +7,22 @@ Skybox::Skybox()
       rotation_angle(0.0f) {}
 
 Skybox::Skybox(const char* path, float rotation_angle)
-    : envLight(0.0f),
-      file_path(path),
-      rotation_angle(rotation_angle),
-      texture(file_path.c_str()) {}
+    : Skybox() {
+    setTexture(path, rotation_angle);
+}
+
+bool Skybox::setTexture(const char* path, float rotation_angle) {
+    if (!texture.load(path))
+        return false;
+
+    this->rotation_angle = rotation_angle;
+    return true;
+}
+
+void Skybox::setTexture(const glm::vec3& color) {
+    texture.clear();
+    envLight = color;
+}
 
 glm::vec3 Skybox::sampleColor(const glm::vec3& direction) const {
     if (texture.data == nullptr)

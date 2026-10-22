@@ -12,6 +12,9 @@ struct Texture {
     Texture& operator=(const Texture&) = delete;
     ~Texture();
 
+    bool load(const char* file);
+    void clear();
+
     glm::vec3 sample(float u , float v, bool repeatU =false ) const ;
 
 private:

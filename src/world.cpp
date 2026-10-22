@@ -14,8 +14,9 @@ World::World()
 
     float ar = 9/16.0f;
     float f = 1.0f;
+    skybox.setTexture(glm::vec3(0.0f));
     cam = Camera(f, ar, 80, 512);
-
+    
     Material mat;
     mat = Material(glm::vec3(0.6, 0, 0), 0, 0.0f);//0.5f
     materials.push_back(mat); // creates a copy of mat and stores it at the end of the maaterials array
