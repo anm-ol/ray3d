@@ -1,5 +1,12 @@
 build/
+builds/
 build-release/
 assets/
 .vscode
 models/
+
+# Local image assets.
+/assets/
+
+# Local experiments.
+/test/

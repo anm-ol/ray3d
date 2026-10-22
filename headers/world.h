@@ -3,6 +3,7 @@
 #include <memory>
 #include "entity.h"
 #include "camera.h"
+#include "skybox.h"
 
 class World
 {
@@ -14,10 +15,9 @@ public:
     int sampleCount;
 
     Camera cam;
-
-    glm::vec3 envLight;
+    Skybox skybox;
     
-    World(); // default world
+    World();
     glm::vec3 trace(ray& r, int max_bounces);
     bool ray_hit(ray& r, hitInfo& hit, uint32_t& entityID);
     void sampleRays(bool accumulate);
