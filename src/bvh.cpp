@@ -103,7 +103,89 @@ BVH::~BVH()
 // split to for bvh recursively
 void BVH::splitBVH(BVHNode *rootNode, int depth)
 {
-    // TODO
+    if (!rootNode || rootNode->triangles.empty())
+        return;
+
+    // Calculate the bounding box
+    Triangle *first = rootNode->triangles[0];
+
+    rootNode->bbox.min = glm::min(
+        glm::min(first->v0, first->v1), first->v2
+    );
+
+    rootNode->bbox.max = glm::max(
+        glm::max(first->v0, first->v1), first->v2
+    );
+
+    for (Triangle *t : rootNode->triangles)
+    {
+        rootNode->bbox.min = glm::min(
+            rootNode->bbox.min,
+            glm::min(glm::min(t->v0, t->v1), t->v2)
+        );
+
+        rootNode->bbox.max = glm::max(
+            rootNode->bbox.max,
+            glm::max(glm::max(t->v0, t->v1), t->v2)
+        );
+    }
+
+    // Stop at maximum depth or when splitting is unnecessary
+    constexpr size_t MAX_LEAF_TRIANGLES = 4;
+
+    if (depth <= 0 ||
+        rootNode->triangles.size() <= MAX_LEAF_TRIANGLES)
+        return;
+
+    // Find the longest bounding-box axis
+    glm::vec3 extent = rootNode->bbox.max - rootNode->bbox.min;
+
+    int axis = 0;
+    if (extent.y > extent.x)
+        axis = 1;
+    if (extent.z > extent[axis])
+        axis = 2;
+
+    // Sort triangles by centroid along the selected axis
+    auto centroid = [axis](Triangle *t)
+    {
+        return (t->v0[axis] + t->v1[axis] + t->v2[axis]) / 3.0f;
+    };
+
+    std::sort(
+        rootNode->triangles.begin(),
+        rootNode->triangles.end(),
+        [&](Triangle *a, Triangle *b)
+        {
+            return centroid(a) < centroid(b);
+        }
+    );
+
+    // Split at the median
+    size_t mid = rootNode->triangles.size() / 2;
+
+    if (mid == 0 || mid == rootNode->triangles.size())
+        return;
+
+    rootNode->leftChild = new BVHNode();
+    rootNode->rightChild = new BVHNode();
+
+    rootNode->leftChild->triangles.assign(
+        rootNode->triangles.begin(),
+        rootNode->triangles.begin() + mid
+    );
+
+    rootNode->rightChild->triangles.assign(
+        rootNode->triangles.begin() + mid,
+        rootNode->triangles.end()
+    );
+
+    // Internal nodes no longer need their triangle list
+    rootNode->triangles.clear();
+
+    // Recursively build children
+    splitBVH(rootNode->leftChild, depth - 1);
+    splitBVH(rootNode->rightChild, depth - 1);
 }
 
 void BVH::deleteTree(BVHNode *node)

@@ -67,7 +67,7 @@ void setCornellBox(World& world)
     world.materials.push_back(Material(glm::vec3(0.65f, 0.05f, 0.05f), 0.0f, 1.0f));
     world.materials.push_back(Material(glm::vec3(0.12f, 0.45f, 0.15f), 0.0f, 1.0f));
     world.materials.push_back(Material(glm::vec3(1.0f, 0.9f, 0.75f), 15.0f));
-    world.materials.push_back(Material(glm::vec3(0.95f), 0.0f, 1.0f)); // polished metal
+    world.materials.push_back(Material(glm::vec3(0.7f), 0.95f, 0.01f)); // polished metal
 
     // Room walls, all facing inward.
     addQuad(world, {-1, -1, 0}, {-1, -1, 2}, { 1, -1, 2}, { 1, -1, 0}, WHITE); // floor,   normal +Y
@@ -85,17 +85,17 @@ void setCornellBox(World& world)
     // addBox(world, glm::vec3(-0.35f, -0.70f, 0.65f), glm::vec3(0.6f, 0.6f, 0.6f), -15.0f, WHITE);'
 
     glm::vec3 center{0.0f, -0.3f, 1.0f};
-    glm::vec3 scale{0.08f};
-    std::shared_ptr<Mesh> mesh1 = std::make_shared<Mesh>("models/dragon.obj", center, scale);
-    mesh1->materialID = SHINY;
+    glm::vec3 scale{10.0f};
+    std::shared_ptr<Mesh> mesh1 = std::make_shared<Mesh>("models/car.obj", center, scale);
+    mesh1->materialID = WHITE;
     world.entities.push_back(mesh1);
 }
 
 int main()
 {
     World world = World();
-    setCornellBox(world);
-    std::cout << world.cam.aspect_ratio << std::endl;
+    // setCornellBox(world);
+
     renderer scene(world, 800, 600);
     scene.render(world);
 

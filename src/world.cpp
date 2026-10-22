@@ -25,32 +25,50 @@ World::World()
     materials.push_back(mat); // creates a copy of mat and stores it at the end of the maaterials array
     mat = Material(glm::vec3(1.0f), 1, 0.0f);//0.2f);  //glm::vec3(0.2, 0.8, 0), 1, 0.0f);//0.2f);
     materials.push_back(mat);
-    mat = Material(glm::vec3(0.2, 0.2, 0.7), 1, 0.0f);//0.5f);
+    mat = Material(glm::vec3(0.8, 0.8, 0.7), 1, 0.05f);
     materials.push_back(mat);
-    mat = Material(glm::vec3(0, 0, 1), 1.0f); // emissive material
+    mat = Material(glm::vec3(0.2, 0.2, 0.7), 1, 0.5f);
+    materials.push_back(mat);
+    mat = Material(glm::vec3(1), 1.0f); // emissive material
+    materials.push_back(mat);
+    mat = Material(glm::vec3(0.955f, 0.48f, 0.38f), 0.3f, 0.1f); // polished copper
+    materials.push_back(mat); 
+    mat = Material(glm::vec3(0.2f, 0.8f, 0.2f), 1.0f); // emissive material
     materials.push_back(mat);
 
     std::shared_ptr<Sphere> s0 = std::make_shared<Sphere>(glm::vec3(2, 42, 2), 40.0f);
     s0->materialID = 0;
-    entities.push_back(s0);
+    // entities.push_back(s0);
     
-    std::shared_ptr<Sphere> s1 = std::make_shared<Sphere>(glm::vec3(0, 1, 2.5), 1.0f);
-    s1->materialID = 1;
+    std::shared_ptr<Sphere> s1 = std::make_shared<Sphere>(glm::vec3(2, 1, -0.2), 1.0f);
+    s1->materialID = 5;
     entities.push_back(s1);
 
-    std::shared_ptr<Sphere> s2 = std::make_shared<Sphere>(glm::vec3(2, -40, 2), 40.0f);
+    std::shared_ptr<Sphere> s2 = std::make_shared<Sphere>(glm::vec3(2, -41, 2), 40.0f);
     s2->materialID = 2;
     entities.push_back(s2);
 
-    std::shared_ptr<Sphere> s3 = std::make_shared<Sphere>(glm::vec3(1.5, 1, 1.0), 0.5f);
+    std::shared_ptr<Sphere> s3 = std::make_shared<Sphere>(glm::vec3(-1.5, 1, -1.0), 0.5f);
     s3->materialID = 3;
-    entities.push_back(s3);
+    // entities.push_back(s3);
 
-    glm::vec3 center{0.0f, 0.25f, 1.0f};
-    glm::vec3 scale{0.10f};
-    std::shared_ptr<Mesh> mesh1 = std::make_shared<Mesh>("models/dragon.obj", center, scale);
-    mesh1->materialID = 0;
-    entities.push_back(mesh1);
+    glm::vec3 center{0.0f, -1.0f, 1.0f};
+    glm::vec3 scale{0.5f};
+    std::shared_ptr<Mesh> mesh1 = std::make_shared<Mesh>("models/sphere.obj", center, scale);
+    mesh1->materialID = 4;
+    // entities.push_back(mesh1);
+
+    center = glm::vec3{2.0f, -1.0f, 2.0f};
+    scale = glm::vec3{0.05f};
+    std::shared_ptr<Mesh> mesh2 = std::make_shared<Mesh>("models/car.obj", center, scale);
+    mesh1->materialID = 4;
+    entities.push_back(mesh2);
+
+    // center = glm::vec3{-3.0f, 0.7f, 1.0f};
+    // scale = glm::vec3{0.4f, 0.6f, 0.4f};
+    // std::shared_ptr<Mesh> mesh2 = std::make_shared<Mesh>("models/stanford-bunny.obj", center, scale);
+    // mesh2->materialID = 0;
+    // entities.push_back(mesh2);
 
     pixels = vector<glm::vec4>(cam.image_height*cam.image_width, glm::vec4(0.0,0,0,1));
     accumPixels = vector<glm::vec4>(cam.image_height*cam.image_width, glm::vec4(0.0,0,0,1));
@@ -111,7 +129,7 @@ void World::sampleRays(bool accumulate)
 
     sampleCount++;
 
-    int num_samples = 3;
+    int num_samples = 1;
     int max_bounces = 5;
     for(int heightIndex=0; heightIndex<cam.image_height; heightIndex++)
     {
