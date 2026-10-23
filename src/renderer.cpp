@@ -42,24 +42,23 @@ void renderer::init_window()
     glfwSetWindowUserPointer(window, this);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); 
 
-    auto framebuffer_size_callback = [](GLFWwindow* window, int width, int height)
-    {
-        auto* self = static_cast<renderer*>(glfwGetWindowUserPointer(window));
-        auto image_ar = self->aspect_ratio;
-        float win_ar = (float)height/width;
-        int vh, vw;
-        if(win_ar < image_ar) {vw = width; vh = width*image_ar;}
-        else
-        {
-            vh = height; vw = height/image_ar;
-        }
-        std::cout << "fb " << width << "x" << height
-          << " vp " << vw << "x" << vh << "\n";
-        glViewport((width - vw) / 2, (height - vh) / 2, vw, vh);
-    };
-
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);  
     glfwSetCursorPosCallback(window, mouseCallback);
+
+}
+
+void renderer::onResize()
+{   
+    int fbW, fbH;
+    glfwGetFramebufferSize(window, &fbW, &fbH);
+    auto image_ar = aspect_ratio;
+    float win_ar = (float)fbH/fbW;
+    int vh, vw;
+    if(win_ar < image_ar) {vw = fbW; vh = fbW*image_ar;}
+    else
+    {
+        vh = fbH; vw = fbH/image_ar;
+    }
+    glViewport((fbW - vw) / 2, (fbH - vh) / 2, vw, vh);
 }
 
 // Change from reinhard tonemap to something else
@@ -76,6 +75,7 @@ void renderer::setupFrame()
 
 void renderer::updateFrame(std::vector<glm::vec4>& pixels)
 {   
+    onResize();
     glBindTexture(GL_TEXTURE_2D, texture);
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, texWidth, texHeight, GL_RGBA, GL_FLOAT, pixels.data());
 

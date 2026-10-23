@@ -56,7 +56,7 @@ void setCornellBox(World& world)
 
     // Square image and a narrow FOV so the open front of the room fills the frame.
     world.cam = Camera(1.0f, 1.0f, 40.0f, 512);
-    world.cam.setPosition(glm::vec3(0.0f, 0.0f, -2.7f));
+    world.cam.setPosition(glm::vec3(0.0f, 0.0f, -3.7f));
     size_t numPixels = (size_t)world.cam.image_height * world.cam.image_width;
     world.pixels.assign(numPixels, glm::vec4(0, 0, 0, 1));
     world.accumPixels.assign(numPixels, glm::vec4(0, 0, 0, 1));
@@ -88,7 +88,7 @@ int main()
 {
     World world = World();
     setCornellBox(world);
-
+    std::cout << world.cam.aspect_ratio << std::endl;
     renderer scene(world, 800, 600);
     scene.render(world);
 

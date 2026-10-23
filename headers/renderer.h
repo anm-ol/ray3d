@@ -34,6 +34,7 @@ public:
     void init_window();
     void render(World& world);
     void setupFrame();
+    void onResize();
     void updateFrame(std::vector<glm::vec4>& pixels);
 
     void processInput(World& world);
