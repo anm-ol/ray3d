@@ -38,7 +38,6 @@ public:
     void updateFrame(std::vector<glm::vec4>& pixels);
 
     void processInput(World& world);
-    // static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 };
 
 void mouseCallback(GLFWwindow* window, double xpos, double ypos);

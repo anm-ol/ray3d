@@ -16,6 +16,9 @@ World::World()
     float f = 1.0f;
     skybox.setTexture(glm::vec3(0.0f));
     cam = Camera(f, ar, 80, 512);
+
+    num_samples = 1;
+    max_bounces = 5;
     
     Material mat;
     mat = Material(glm::vec3(0.6, 0, 0), 0, 0.0f);//0.5f
@@ -105,9 +108,6 @@ void World::sampleRays(bool accumulate)
 {      
 
     sampleCount++;
-
-    int num_samples = 1;
-    int max_bounces = 5;
     for(int heightIndex=0; heightIndex<cam.image_height; heightIndex++)
     {
         for(int widthIndex=0; widthIndex<cam.image_width; widthIndex++)

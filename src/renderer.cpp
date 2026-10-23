@@ -150,7 +150,9 @@ void renderer::processInput(World& world)
         newCamPosition = cameraPos + cameraSpeed * worldUp;
     if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
         newCamPosition = cameraPos - cameraSpeed * worldUp;
-    world.cam.setPosition(newCamPosition);
+
+    if (glfwGetInputMode(window, GLFW_CURSOR) != GLFW_CURSOR_NORMAL)
+        world.cam.setPosition(newCamPosition);
 }
 
 void mouseCallback(GLFWwindow* window, double xpos, double ypos)

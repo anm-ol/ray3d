@@ -14,6 +14,8 @@ public:
     std::vector<glm::vec4> accumPixels;
     int sampleCount;
 
+    int num_samples, max_bounces;
+
     Camera cam;
     Skybox skybox;
     
@@ -24,4 +26,3 @@ public:
 
 };
 
-// should this class be renamed to world?
