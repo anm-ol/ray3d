@@ -10,7 +10,7 @@ public:
     float pixelWidth, pixelHeight;
 
     float pitch, yaw;
-
+    bool antialiasing;
     glm::vec3 pixelX, pixelY;
     int image_height, image_width;
 

@@ -52,8 +52,8 @@ void setCornellBox(World& world)
 {
     world.entities.clear();
     world.materials.clear();
-    world.skybox.setTexture("assets/cloud_layers_1k.hdr"); // nothing outside the box emits light
-
+    world.skybox.setTexture("assets/kloofendal_48d_partly_cloudy_puresky_4k.hdr"); // nothing outside the box emits light
+    world.skybox.setTexture(glm::vec3(.0f));
     // Square image and a narrow FOV so the open front of the room fills the frame.
     world.cam = Camera(1.0f, 1.0f, 40.0f, 512);
     world.cam.setPosition(glm::vec3(0.0f, 0.0f, -3.7f));
@@ -85,8 +85,8 @@ void setCornellBox(World& world)
     // addBox(world, glm::vec3(-0.35f, -0.70f, 0.65f), glm::vec3(0.6f, 0.6f, 0.6f), -15.0f, WHITE);'
 
     glm::vec3 center{0.0f, -0.3f, 1.0f};
-    glm::vec3 scale{10.0f};
-    std::shared_ptr<Mesh> mesh1 = std::make_shared<Mesh>("models/car.obj", center, scale);
+    glm::vec3 scale{0.05f};
+    std::shared_ptr<Mesh> mesh1 = std::make_shared<Mesh>("models/dragon.obj", center, scale);
     mesh1->materialID = WHITE;
     world.entities.push_back(mesh1);
 }
@@ -94,7 +94,7 @@ void setCornellBox(World& world)
 int main()
 {
     World world = World();
-    // setCornellBox(world);
+    setCornellBox(world);
 
     renderer scene(world, 800, 600);
     scene.render(world);

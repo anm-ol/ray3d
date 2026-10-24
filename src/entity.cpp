@@ -42,6 +42,8 @@ bool Sphere::ray_hit(ray& r, hitInfo& hit)
 using namespace glm;
 
 Triangle::Triangle(glm::vec3 v0, glm::vec3 v1, glm::vec3 v2): v0(v0), v1(v1), v2(v2) {}
+Triangle::Triangle(glm::vec3 v0, glm::vec3 v1, glm::vec3 v2, glm::vec3 n0, glm::vec3 n1, glm::vec3 n2):
+    v0(v0), v1(v1), v2(v2), n1(n1), n2(n2), n0(n0) {hasVertexNormal = true;}
 
 bool Triangle::ray_hit(ray& r, hitInfo& hit)
 {
@@ -84,7 +86,13 @@ bool Triangle::ray_hit(ray& r, hitInfo& hit)
 
     hit.closest_t = t;
     hit.hitPoint = r.at(t);
-    hit.hitNormal = glm::normalize(glm::cross(edge1, edge2));
+    if(hasVertexNormal) // add option for switching back to flat shading
+    {
+        auto normal = (1-u-v)*n0 + v*n2 + u*n1;
+        hit.hitNormal = normal;
+    }
+    else
+        hit.hitNormal = glm::normalize(glm::cross(edge1, edge2));
 
     return true;
 }
@@ -118,26 +126,55 @@ Mesh::Mesh(const std::string& mesh_file,
     const auto& attrib = reader.GetAttrib();    // vertex positions 
     const auto& shapes = reader.GetShapes();    // vertex indices 
 
+
     for (const auto& shape : shapes) 
     {
         const auto& indices = shape.mesh.indices;
+        auto getVertex = [&](size_t index) {
+            int vi = indices[index].vertex_index;
+
+            return glm::vec3(
+                attrib.vertices[3 * vi],
+                attrib.vertices[3 * vi + 1],
+                attrib.vertices[3 * vi + 2]
+            );
+        };
+        auto getNormal = [&](size_t index) {
+            int vn = indices[index].normal_index;
+
+            return glm::vec3(
+                attrib.normals[3 * vn],
+                attrib.normals[3 * vn + 1],
+                attrib.normals[3 * vn + 2]
+            );
+        };
+
+        int ncount=0;
+        std::cout<< indices.size() << std::endl ;
         for (size_t i = 0; i+2 < indices.size(); i += 3) 
         {   
-            auto getVertex = [&](size_t index) {
-                int vi = indices[index].vertex_index;
+            if(indices[i].normal_index >= 0) // check if vertex normasl are available 
+            {
+                ncount++;
+                // std::cout << ncount << "  ";
 
-                return glm::vec3(
-                    attrib.vertices[3 * vi],
-                    attrib.vertices[3 * vi + 1],
-                    attrib.vertices[3 * vi + 2]
+                triangles.emplace_back(
+                    getVertex(i),
+                    getVertex(i+1),
+                    getVertex(i+2),
+                    getNormal(i),
+                    getNormal(i+1),
+                    getNormal(i+2)
                 );
-            };
-
-            triangles.emplace_back(
-                getVertex(i),
-                getVertex(i+1),
-                getVertex(i+2)
-            );
+            }
+            else
+            {
+                triangles.emplace_back(
+                    getVertex(i),
+                    getVertex(i+1),
+                    getVertex(i+2)
+                );
+            }
         }
     }
 

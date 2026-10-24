@@ -1,4 +1,5 @@
 #include <glm/glm.hpp>
+#include <glm/gtc/random.hpp>
 #include <numbers>
 #include "camera.h"
 #include <iostream>
@@ -23,7 +24,8 @@ Camera::Camera(float f, float ar, float vfov, int image_height) : focal_length(f
     yaw = 90;
     frontDir = eulerAngleToDir(pitch, yaw);
     upDir = eulerAngleToDir(pitch + 90, yaw);
-    
+    antialiasing = true;
+
     setOrientation();
 
     vfov = vfov*PI/180; // degree to radian
@@ -36,9 +38,6 @@ Camera::Camera(float f, float ar, float vfov, int image_height) : focal_length(f
 
     pixelX = glm::normalize(glm::cross(focal_center - position, upDir)) * pixelWidth;
     pixelY = glm::normalize(glm::cross(pixelX, focal_center - position)) * pixelHeight;
-    // std::cout << "img " << image_width << "x" << image_height << "\n";
-    // std::cout << "vp  " << viewport_width << "x" << viewport_height << "\n";
-    // std::cout << "px  " << pixelWidth << " " << pixelHeight << "\n";
 } 
 
 void Camera::setPosition(glm::vec3 pos)
@@ -83,11 +82,23 @@ void Camera::processCameraMovement(float xoffset, float yoffset)
 ray Camera::getRay(int width, int height)
 {   
     using namespace glm;
-    // float x = focal_center.x - viewport_width/2 + (width + 0.5)*pixelWidth;   
-    // float y = focal_center.y - viewport_height/2 + (height + 0.5)*pixelHeight; 
-    // vec3 dir = vec3(x, y, focal_center.z) - position;
+
+    float xoffset = glm::linearRand(-1.0f, 1.0f)/2;
+    float yoffset = glm::linearRand(-1.0f, 1.0f)/2;
+    
+    if (antialiasing)
+    {
+        float h = (float)height + yoffset;
+        float w = (float)width + xoffset; // adding random jitter for anti-aliasing
+    }
+    else
+    {
+        float h = (float)height;
+        float w = (float)width; // adding random jitter for anti-aliasing
+    }
+     
     auto cornerPos = focal_center + (float)image_height/2 * pixelY - (float)image_width/2 * pixelX;
-    auto pixelPos = cornerPos - (float)height * pixelY + (float)width * pixelX;
+    auto pixelPos = cornerPos - h * pixelY + w * pixelX;
     return ray(position, pixelPos - position);
 }
 
