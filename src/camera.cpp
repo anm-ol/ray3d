@@ -86,17 +86,9 @@ ray Camera::getRay(int width, int height)
     float xoffset = glm::linearRand(-1.0f, 1.0f)/2;
     float yoffset = glm::linearRand(-1.0f, 1.0f)/2;
     
-    if (antialiasing)
-    {
-        float h = (float)height + yoffset;
-        float w = (float)width + xoffset; // adding random jitter for anti-aliasing
-    }
-    else
-    {
-        float h = (float)height;
-        float w = (float)width; // adding random jitter for anti-aliasing
-    }
-     
+    float h = antialiasing ? (float)height + yoffset : (float)height;
+    float w = antialiasing ? (float)width + yoffset : (float)width;
+
     auto cornerPos = focal_center + (float)image_height/2 * pixelY - (float)image_width/2 * pixelX;
     auto pixelPos = cornerPos - h * pixelY + w * pixelX;
     return ray(position, pixelPos - position);

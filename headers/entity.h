@@ -28,11 +28,14 @@ public:
 class Triangle : public Entity {
 public:
     glm::vec3 v0, v1, v2;
-    glm::vec3 n0, n1, n2;
+    glm::vec3 edge1, edge2;
+    glm::vec3 faceNormal;
 
+    glm::vec3 vn0, vn1, vn2;
     bool hasVertexNormal;
+
     Triangle(glm::vec3 v0, glm::vec3 v1, glm::vec3 v2);
-    Triangle(glm::vec3 v0, glm::vec3 v1, glm::vec3 v2, glm::vec3 n0, glm::vec3 n1, glm::vec3 n2);
+    Triangle(glm::vec3 v0, glm::vec3 v1, glm::vec3 v2, glm::vec3 vn0, glm::vec3 vn1, glm::vec3 vn2);
     bool ray_hit(ray& ray, hitInfo& hit) override;
 };
 
@@ -40,9 +43,10 @@ class Mesh : public Entity {
 public:
     ~Mesh() override;
     Mesh(std::vector<Triangle> triangles);
-    Mesh(const std::string& mesh_file, glm::vec3 c = glm::vec3{1.0f}, glm::vec3 scale = glm::vec3{1.0f});
+    Mesh(const std::string& mesh_file, glm::vec3 c = glm::vec3{0}, glm::vec3 scale = glm::vec3{1}, glm::vec3 rot = glm::vec3{0});
     bool ray_hit(ray& r, hitInfo& hit) override;
 
+    void setRotation(const glm::vec3& rot);
     void setCenter(const glm::vec3& c);
     void setScale(const glm::vec3& s);
 
@@ -51,6 +55,7 @@ private:
     std::unique_ptr<BVH> bvh;
 
     glm::vec3 scale {1.0f};
+    glm::vec3 rotation {0.0f};  // stores angles in degrees
     bool useBVH = true;
     int bvhDepth = 64;
 

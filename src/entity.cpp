@@ -41,16 +41,26 @@ bool Sphere::ray_hit(ray& r, hitInfo& hit)
 
 using namespace glm;
 
-Triangle::Triangle(glm::vec3 v0, glm::vec3 v1, glm::vec3 v2): v0(v0), v1(v1), v2(v2) {}
-Triangle::Triangle(glm::vec3 v0, glm::vec3 v1, glm::vec3 v2, glm::vec3 n0, glm::vec3 n1, glm::vec3 n2):
-    v0(v0), v1(v1), v2(v2), n1(n1), n2(n2), n0(n0) {hasVertexNormal = true;}
+Triangle::Triangle(glm::vec3 v0, glm::vec3 v1, glm::vec3 v2): v0(v0), v1(v1), v2(v2) 
+{
+    edge1 = v1 - v0;
+    edge2 = v2 - v0;
+    faceNormal = glm::normalize(glm::cross(edge1, edge2));
+    hasVertexNormal = false;
+}
+
+Triangle::Triangle(glm::vec3 v0, glm::vec3 v1, glm::vec3 v2, glm::vec3 vn0, glm::vec3 vn1, glm::vec3 vn2):
+    v0(v0), v1(v1), v2(v2), vn0(vn0), vn1(vn1), vn2(vn2)
+{
+    edge1 = v1 - v0;
+    edge2 = v2 - v0;
+    faceNormal = glm::normalize(glm::cross(edge1, edge2));
+    hasVertexNormal = true;
+}
 
 bool Triangle::ray_hit(ray& r, hitInfo& hit)
 {
     constexpr float epsilon = std::numeric_limits<float>::epsilon();
-
-    glm::vec3 edge1 = v1 - v0;
-    glm::vec3 edge2 = v2 - v0;      
 
     glm::vec3 h = glm::cross(r.dir, edge2);
     float det = glm::dot(edge1, h);
@@ -88,11 +98,11 @@ bool Triangle::ray_hit(ray& r, hitInfo& hit)
     hit.hitPoint = r.at(t);
     if(hasVertexNormal) // add option for switching back to flat shading
     {
-        auto normal = (1-u-v)*n0 + v*n2 + u*n1;
+        auto normal = (1-u-v)*vn0 + u*vn1 + v*vn2;
         hit.hitNormal = normal;
     }
     else
-        hit.hitNormal = glm::normalize(glm::cross(edge1, edge2));
+        hit.hitNormal = faceNormal;
 
     return true;
 }
@@ -101,16 +111,12 @@ Mesh::~Mesh() = default;
 
 Mesh::Mesh(std::vector<Triangle> triangles) : triangles(std::move(triangles))
 {
-    if (useBVH) 
-    {
-        bvh = std::make_unique<BVH>(this->triangles, bvhDepth);
-    }
-
+    if (useBVH) { bvh = std::make_unique<BVH>(this->triangles, bvhDepth); }
     updateTransform();
 }
 
 Mesh::Mesh(const std::string& mesh_file, 
-    glm::vec3 c, glm::vec3 scale) : scale(scale)
+    glm::vec3 c, glm::vec3 scale, glm::vec3 rot) : scale(scale), rotation(rot)
 {
     center = c;
 
@@ -149,15 +155,11 @@ Mesh::Mesh(const std::string& mesh_file,
             );
         };
 
-        int ncount=0;
         std::cout<< indices.size() << std::endl ;
         for (size_t i = 0; i+2 < indices.size(); i += 3) 
         {   
             if(indices[i].normal_index >= 0) // check if vertex normasl are available 
             {
-                ncount++;
-                // std::cout << ncount << "  ";
-
                 triangles.emplace_back(
                     getVertex(i),
                     getVertex(i+1),
@@ -178,27 +180,38 @@ Mesh::Mesh(const std::string& mesh_file,
         }
     }
 
-    if (useBVH)
-    {
-        bvh = std::make_unique<BVH>(triangles, bvhDepth);
-    }
-
+    if (useBVH) { bvh = std::make_unique<BVH>(triangles, bvhDepth); }
     updateTransform();
 }
 
 void Mesh::updateTransform() 
 {
-    model = glm::translate(glm::mat4(1.0f), center) * 
-            glm::scale(glm::mat4(1.0f), scale);
+    auto trans_mat = glm::translate(glm::mat4(1.0f), center);
+    auto scale_mat = glm::scale(glm::mat4(1.0f), scale);
+
+    auto rot_mat = glm::mat4(1.0f);
+    rot_mat = glm::rotate(rot_mat, glm::radians(rotation.x), glm::vec3(1, 0, 0));
+    rot_mat = glm::rotate(rot_mat, glm::radians(rotation.y), glm::vec3(0, 1, 0));
+    rot_mat = glm::rotate(rot_mat, glm::radians(rotation.z), glm::vec3(0, 0, 1));
+
+    model = trans_mat * rot_mat * scale_mat;
     invModel = glm::inverse(model);
 }
 
-void Mesh::setCenter(const glm::vec3& c) {
+void Mesh::setRotation(const glm::vec3& rot) 
+{
+    rotation = rot;
+    updateTransform();
+}
+
+void Mesh::setCenter(const glm::vec3& c) 
+{
     center = c;
     updateTransform();
 }
 
-void Mesh::setScale(const glm::vec3& s) {
+void Mesh::setScale(const glm::vec3& s) 
+{
     scale = s;
     updateTransform();
 }

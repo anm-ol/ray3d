@@ -43,6 +43,6 @@ public:
 
 private:
     BVHNode* rootNode = nullptr;
-    void splitBVH(BVHNode* rootNode, int depth = 0);
+    void splitBVH(BVHNode* rootNode, int depth);
     void deleteTree(BVHNode* node);
 };

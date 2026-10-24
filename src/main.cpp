@@ -84,10 +84,11 @@ void setCornellBox(World& world)
     // addBox(world, glm::vec3( 0.35f, -0.40f, 1.30f), glm::vec3(0.6f, 1.2f, 0.6f),  18.0f, WHITE);
     // addBox(world, glm::vec3(-0.35f, -0.70f, 0.65f), glm::vec3(0.6f, 0.6f, 0.6f), -15.0f, WHITE);'
 
-    glm::vec3 center{0.0f, -0.3f, 1.0f};
+    glm::vec3 center{0.0f, -0.95f, 1.0f};
+    glm::vec3 rotation{0.0f, 135.0f, 0.0f};
     glm::vec3 scale{0.05f};
-    std::shared_ptr<Mesh> mesh1 = std::make_shared<Mesh>("models/dragon.obj", center, scale);
-    mesh1->materialID = WHITE;
+    std::shared_ptr<Mesh> mesh1 = std::make_shared<Mesh>("models/car.obj", center, scale, rotation);
+    mesh1->materialID = SHINY;
     world.entities.push_back(mesh1);
 }
 
