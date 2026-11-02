@@ -4,6 +4,8 @@
 #include "shader.h"
 #include "world.h"
 
+class GUI;
+
 class renderer
 {
 public:
@@ -24,6 +26,7 @@ public:
     1.0f, 1.0f, 0.0f    
     };
 
+    std::unique_ptr<GUI> guiLayer;   // gui layer
 
     GLFWwindow* window;
     Shader shader;
@@ -38,6 +41,8 @@ public:
     void updateFrame(std::vector<glm::vec4>& pixels);
 
     void processInput(World& world);
+
+    ~renderer(); 
 };
 
 void mouseCallback(GLFWwindow* window, double xpos, double ypos);

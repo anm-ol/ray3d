@@ -4,6 +4,7 @@ build-release/
 assets/
 .vscode
 models/
+imgui.ini
 
 # Local image assets.
 /assets/

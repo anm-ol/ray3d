@@ -1,4 +1,5 @@
 #include "renderer.h"
+#include "gui.h"
 #include <chrono>
 #include <filesystem>
 #include <iostream>
@@ -11,6 +12,9 @@ renderer::renderer(World& world, int width, int height): world(world), width(wid
     init_window();
     std::string shaderPath = std::filesystem::current_path().string() + "/shaders/";
 	shader = Shader(shaderPath + "vert.glsl", shaderPath + "frag.glsl");
+
+    // init gui
+    guiLayer = std::make_unique<GUI>(world, *this); 
 
     texHeight = world.cam.image_height;
     texWidth = world.cam.image_width;
@@ -98,6 +102,11 @@ void renderer::render(World& world)
         world.sampleRays(accumulate);
 
         updateFrame(world.pixels);
+
+        // update gui
+        guiLayer->initFrame();
+        guiLayer->renderUI();
+
         auto t1 = std::chrono::high_resolution_clock::now();
         std::cout << std::chrono::duration<float,std::milli>(t1-t0).count() << " ms\n";
 
@@ -109,6 +118,7 @@ void renderer::render(World& world)
         glfwPollEvents();    
     }
     
+    guiLayer->cleanup();
     glfwTerminate();
 }
 void renderer::processInput(World& world)
@@ -182,3 +192,5 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos)
     auto& camera = windowUser->world.cam;
     camera.processCameraMovement(xoffset, yoffset);
 }
+
+renderer::~renderer() = default;

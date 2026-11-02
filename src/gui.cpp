@@ -32,7 +32,15 @@ void GUI::initFrame()
 // draw all the UI elements
 void GUI::renderUI()
 {
-    
+    ImGui::Begin("Debug");
+    ImGuiIO& io = ImGui::GetIO();
+    ImGui::Text("FPS: %.1f", io.Framerate);
+    ImGui::Text("Frame time: %.3f ms", 1000.0f / io.Framerate);
+    ImGui::Text("Display size: %.0f x %.0f", io.DisplaySize.x, io.DisplaySize.y);
+    ImGui::End();
+
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
 void GUI::cleanup()

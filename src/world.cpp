@@ -51,7 +51,7 @@ World::World()
     glm::vec3 center(0.0f, -1.0f, 1.0f);
     glm::vec3 scale(0.05f);
     glm::vec3 rotation(0.0f, 0.0f, 0.0f);
-    auto mesh2 = std::make_shared<Mesh>("models/dragon.obj", center, scale, rotation);
+    auto mesh2 = std::make_shared<Mesh>("models/cube.obj", center, scale, rotation);
     mesh2->materialID = 5;
     entities.push_back(mesh2);
 
