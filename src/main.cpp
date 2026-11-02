@@ -87,7 +87,7 @@ void setCornellBox(World& world)
     glm::vec3 center{0.0f, -0.95f, 1.0f};
     glm::vec3 rotation{0.0f, 135.0f, 0.0f};
     glm::vec3 scale{0.05f};
-    std::shared_ptr<Mesh> mesh1 = std::make_shared<Mesh>("models/car.obj", center, scale, rotation);
+    std::shared_ptr<Mesh> mesh1 = std::make_shared<Mesh>("models/dragon.obj", center, scale, rotation);
     mesh1->materialID = SHINY;
     world.entities.push_back(mesh1);
 }
@@ -95,7 +95,7 @@ void setCornellBox(World& world)
 int main()
 {
     World world = World();
-    setCornellBox(world);
+    // setCornellBox(world);
 
     renderer scene(world, 800, 600);
     scene.render(world);

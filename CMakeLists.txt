@@ -26,6 +26,49 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(glm)
 
+FetchContent_Declare(
+    imgui
+    GIT_REPOSITORY https://github.com/ocornut/imgui.git
+    GIT_TAG        v1.92.4-docking
+)
+FetchContent_MakeAvailable(imgui)
+
+add_library(imgui)
+
+target_include_directories(
+    imgui
+    PUBLIC
+    ${imgui_SOURCE_DIR}
+    ${imgui_SOURCE_DIR}/backends
+)
+
+target_sources(
+    imgui
+    PUBLIC
+    ${imgui_SOURCE_DIR}/imgui.cpp
+    ${imgui_SOURCE_DIR}/imgui_draw.cpp
+    ${imgui_SOURCE_DIR}/imgui_widgets.cpp
+    ${imgui_SOURCE_DIR}/imgui_tables.cpp
+    ${imgui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
+    ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
+)
+
+find_package(OpenGL REQUIRED)
+target_link_libraries(
+    imgui 
+    PUBLIC 
+    glfw
+    OpenGL::GL
+)
+
+if(UNIX AND NOT APPLE)
+    find_package(X11 QUIET)
+
+    if (X11_FOUND)  
+        target_link_libraries(imgui PRIVATE X11::X11)
+    endif()
+endif()
+
 add_executable(ray3d)
 
 target_sources(ray3d
@@ -39,6 +82,7 @@ target_sources(ray3d
         src/skybox.cpp
         src/texture.cpp
         src/bvh.cpp
+        src/gui.cpp
         third_party/glad/src/glad.c
 )
 
@@ -54,6 +98,7 @@ target_link_libraries(ray3d
     PRIVATE
         glfw
         glm::glm
+        imgui
 )
 
 target_compile_options(ray3d PRIVATE
