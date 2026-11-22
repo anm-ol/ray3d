@@ -48,10 +48,12 @@ World::World()
     s3->materialID = 3;
     entities.push_back(s3);
 
-    glm::vec3 center(0.0f, -1.0f, 1.0f);
-    glm::vec3 scale(0.05f);
-    glm::vec3 rotation(0.0f, 0.0f, 90.0f);
-    auto mesh2 = std::make_shared<Mesh>("models/car.obj", center, scale, rotation);
+    glm::vec3 pos(0.0f, -1.0f, 1.0f);
+    glm::vec3 rot(0.0f, 0.0f, 0.0f);
+    glm::vec3 scale(0.1f);
+    Transform trans(pos, rot, scale);
+
+    auto mesh2 = std::make_shared<Mesh>("models/dragon.obj", trans);
     mesh2->materialID = 5;
     entities.push_back(mesh2);
 

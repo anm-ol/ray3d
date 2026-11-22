@@ -8,6 +8,7 @@
 
 class Triangle;
 
+// bouding box
 struct AABB {
 public:
     glm::vec3 min, max;

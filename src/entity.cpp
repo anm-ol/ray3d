@@ -13,7 +13,6 @@ Sphere::Sphere(glm::vec3 c, float r): radius(r)
     // emissiveStrength = 0.6;
 }
 
-
 using namespace std;
 bool Sphere::ray_hit(ray& r, hitInfo& hit)
 {
@@ -109,17 +108,18 @@ bool Triangle::ray_hit(ray& r, hitInfo& hit)
 
 Mesh::~Mesh() = default;
 
-Mesh::Mesh(std::vector<Triangle> triangles) : triangles(std::move(triangles))
+Mesh::Mesh(std::vector<Triangle> triangles, Transform transform
+) : triangles(std::move(triangles)), transform(transform)
 {
-    if (useBVH) { bvh = std::make_unique<BVH>(this->triangles, bvhDepth); }
-    updateTransform();
+    if (useBVH) 
+    { 
+        bvh = std::make_unique<BVH>(this->triangles, bvhDepth); 
+    }
+    transform.update();
 }
 
-Mesh::Mesh(const std::string& mesh_file, 
-    glm::vec3 c, glm::vec3 scale, glm::vec3 rot) : scale(scale), rotation(rot)
+Mesh::Mesh(const std::string& mesh_file, Transform transform) : transform(transform) 
 {
-    center = c;
-
     tinyobj::ObjReader reader;
     tinyobj::ObjReaderConfig config;
     config.triangulate = true;
@@ -155,7 +155,6 @@ Mesh::Mesh(const std::string& mesh_file,
             );
         };
 
-        std::cout<< indices.size() << std::endl ;
         for (size_t i = 0; i+2 < indices.size(); i += 3) 
         {   
             if(indices[i].normal_index >= 0) // check if vertex normasl are available 
@@ -180,48 +179,19 @@ Mesh::Mesh(const std::string& mesh_file,
         }
     }
 
-    if (useBVH) { bvh = std::make_unique<BVH>(triangles, bvhDepth); }
-    updateTransform();
-}
-
-void Mesh::updateTransform() 
-{
-    auto trans_mat = glm::translate(glm::mat4(1.0f), center);
-    auto scale_mat = glm::scale(glm::mat4(1.0f), scale);
-
-    auto rot_mat = glm::mat4(1.0f);
-    rot_mat = glm::rotate(rot_mat, glm::radians(rotation.x), glm::vec3(1, 0, 0));
-    rot_mat = glm::rotate(rot_mat, glm::radians(rotation.y), glm::vec3(0, 1, 0));
-    rot_mat = glm::rotate(rot_mat, glm::radians(rotation.z), glm::vec3(0, 0, 1));
-
-    model = trans_mat * rot_mat * scale_mat;
-    invModel = glm::inverse(model);
-}
-
-void Mesh::setRotation(const glm::vec3& rot) 
-{
-    rotation = rot;
-    updateTransform();
-}
-
-void Mesh::setCenter(const glm::vec3& c) 
-{
-    center = c;
-    updateTransform();
-}
-
-void Mesh::setScale(const glm::vec3& s) 
-{
-    scale = s;
-    updateTransform();
+    if (useBVH) 
+    { 
+        bvh = std::make_unique<BVH>(triangles, bvhDepth); 
+    }
+    transform.update();
 }
 
 bool Mesh::ray_hit(ray &r, hitInfo &hit)
 {  
     // world space -> mesh space
     ray localRay;
-    localRay.orig = glm::vec3(invModel * glm::vec4(r.orig, 1.0f));
-    localRay.dir = glm::vec3(invModel * glm::vec4(r.dir, 0.0f));
+    localRay.orig = glm::vec3(transform.invModel * glm::vec4(r.orig, 1.0f));
+    localRay.dir = glm::vec3(transform.invModel * glm::vec4(r.dir, 0.0f));
 
     bool hitAnything = false;
     if (useBVH)
@@ -242,9 +212,30 @@ bool Mesh::ray_hit(ray &r, hitInfo &hit)
     if (hitAnything)
     {
         // convert mesh space -> world space
-        hit.hitPoint = glm::vec3(model * glm::vec4(hit.hitPoint, 1.0f));
-        hit.hitNormal = glm::normalize(glm::transpose(glm::mat3(invModel)) * hit.hitNormal);
+        hit.hitPoint = glm::vec3(transform.model * glm::vec4(hit.hitPoint, 1.0f));
+        hit.hitNormal = glm::normalize(glm::transpose(glm::mat3(transform.invModel)) * hit.hitNormal);
     }
 
     return hitAnything;
+}
+
+Transform::Transform(
+    glm::vec3 pos, glm::vec3 rot, glm::vec3 scale
+) : pos(pos), rot(rot), scale(scale)
+{
+    update();
+}
+
+void Transform::update() 
+{
+    auto trans_mat = glm::translate(glm::mat4(1.0f), pos);
+    auto scale_mat = glm::scale(glm::mat4(1.0f), scale);
+
+    auto rot_mat = glm::mat4(1.0f);
+    rot_mat = glm::rotate(rot_mat, glm::radians(rot.x), glm::vec3(1, 0, 0));
+    rot_mat = glm::rotate(rot_mat, glm::radians(rot.y), glm::vec3(0, 1, 0));
+    rot_mat = glm::rotate(rot_mat, glm::radians(rot.z), glm::vec3(0, 0, 1));
+
+    model = trans_mat * rot_mat * scale_mat;
+    invModel = glm::inverse(model);
 }

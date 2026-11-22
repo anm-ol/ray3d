@@ -9,6 +9,25 @@
 
 class BVH;
 
+class Transform {
+public:
+    glm::vec3 pos;
+    glm::vec3 rot;    // in degrees
+    glm::vec3 scale;
+
+    glm::mat4 model;
+    glm::mat4 invModel;
+
+    Transform(
+        glm::vec3 pos = glm::vec3{0.0f}, 
+        glm::vec3 rot = glm::vec3{0.0f}, 
+        glm::vec3 scale = glm::vec3{1.0f}
+    );
+
+    // init/recompute model and invModel
+    void update();
+};
+
 class Entity {
 public:
     glm::vec3 center{0.0f};
@@ -32,7 +51,7 @@ public:
     glm::vec3 faceNormal;
 
     glm::vec3 vn0, vn1, vn2;
-    bool hasVertexNormal;
+    bool hasVertexNormal = false;
 
     Triangle(glm::vec3 v0, glm::vec3 v1, glm::vec3 v2);
     Triangle(glm::vec3 v0, glm::vec3 v1, glm::vec3 v2, glm::vec3 vn0, glm::vec3 vn1, glm::vec3 vn2);
@@ -41,26 +60,18 @@ public:
 
 class Mesh : public Entity {
 public:
-    ~Mesh() override;
-    Mesh(std::vector<Triangle> triangles);
-    Mesh(const std::string& mesh_file, glm::vec3 c = glm::vec3{0}, glm::vec3 scale = glm::vec3{1}, glm::vec3 rot = glm::vec3{0});
-    bool ray_hit(ray& r, hitInfo& hit) override;
+    Transform transform;
 
-    void setRotation(const glm::vec3& rot);
-    void setCenter(const glm::vec3& c);
-    void setScale(const glm::vec3& s);
+    ~Mesh() override;
+    Mesh(std::vector<Triangle> triangles, Transform transform = Transform{});
+    Mesh(const std::string& mesh_file, Transform transform = Transform{});
+
+    bool ray_hit(ray& r, hitInfo& hit) override;
 
 private:
     std::vector<Triangle> triangles;
     std::unique_ptr<BVH> bvh;
 
-    glm::vec3 scale {1.0f};
-    glm::vec3 rotation {0.0f};  // stores angles in degrees
     bool useBVH = true;
     int bvhDepth = 64;
-
-    glm::mat4 model;
-    glm::mat4 invModel;
-
-    void updateTransform();
 };
